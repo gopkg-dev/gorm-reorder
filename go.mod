@@ -1,4 +1,4 @@
-module gorm-reorder
+module github.com/gopkg-dev/gorm-reorder
 
 go 1.16
 

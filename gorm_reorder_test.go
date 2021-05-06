@@ -1,7 +1,8 @@
-package gorm_reorder
+package gorm_reorder_test
 
 import (
 	"database/sql"
+	gormReorder "github.com/gopkg-dev/gorm-reorder"
 	"testing"
 	"time"
 
@@ -20,12 +21,12 @@ type User struct {
 }
 
 func TestReorder(t *testing.T) {
-	cfg := Config{
+	cfg := gormReorder.Config{
 		AutoAdd:       true,
 		TablePrefix:   "t_amz_",
 		SingularTable: true,
 	}
-	reorder := NewReorder(cfg).AddModel([]interface{}{User{}}).Parser()
+	reorder := gormReorder.NewReorder(cfg).AddModel([]interface{}{User{}}).Parser()
 	require.NotNil(t, reorder)
 	require.NotEmpty(t, reorder.GetSchemas())
 	for _, schema := range reorder.GetSchemas() {

@@ -62,7 +62,7 @@ func MarshalSchema(s []*schema.Schema) (b []byte, err error) {
 		}
 		schemas = append(schemas, entSchema)
 	}
-	return json.Marshal(schemas)
+	return json.MarshalIndent(schemas, "", "\t")
 }
 
 func UnmarshalSchema(buf []byte) ([]Schema, error) {

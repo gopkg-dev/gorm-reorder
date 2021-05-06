@@ -34,7 +34,7 @@ func TestReorder(t *testing.T) {
 		t.Logf("%#v", schema)
 	}
 
-	marshalSchema, err := reorder.MarshalSchema()
+	marshalSchema, err := gormReorder.MarshalSchema(reorder.GetSchemas())
 	if err != nil {
 		t.Fatal(err)
 	}

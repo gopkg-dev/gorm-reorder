@@ -2,9 +2,10 @@ package gorm_reorder_test
 
 import (
 	"database/sql"
-	gormReorder "github.com/gopkg-dev/gorm-reorder"
 	"testing"
 	"time"
+
+	gormReorder "github.com/gopkg-dev/gorm-reorder"
 
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -32,4 +33,12 @@ func TestReorder(t *testing.T) {
 	for _, schema := range reorder.GetSchemas() {
 		t.Logf("%#v", schema)
 	}
+
+	marshalSchema, err := reorder.MarshalSchema()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(string(marshalSchema))
+
 }

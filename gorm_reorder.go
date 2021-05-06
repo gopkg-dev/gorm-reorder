@@ -1,7 +1,6 @@
 package gorm_reorder
 
 import (
-	"encoding/json"
 	"log"
 	"reflect"
 
@@ -153,46 +152,4 @@ func (r *reorder) Parser() *reorder {
 
 func (r *reorder) GetSchemas() []*schema.Schema {
 	return r.schemas
-}
-
-func (r *reorder) MarshalSchema() (b []byte, err error) {
-	var schemas []Schema
-	for _, s := range r.GetSchemas() {
-		entSchema := Schema{
-			Name:      s.Name,
-			TableName: s.Table,
-			Fields:    []*Field{},
-		}
-		for _, field := range s.Fields {
-			if field.IgnoreMigration || field.GORMDataType == "" {
-				continue
-			}
-			entSchema.Fields = append(entSchema.Fields, &Field{
-				Name:            field.Name,
-				DBName:          field.DBName,
-				DataType:        string(field.DataType),
-				FullTypeName:    field.FieldType.String(),
-				IsPtr:           field.FieldType.Kind() == reflect.Ptr,
-				Size:            field.Size,
-				Unique:          field.Unique,
-				Comment:         field.Comment,
-				NotNull:         field.NotNull,
-				HasDefaultValue: field.HasDefaultValue,
-				DefaultValue:    field.DefaultValue,
-				PrimaryKey:      field.PrimaryKey,
-				AutoIncrement:   field.AutoIncrement,
-				Tags:            field.TagSettings,
-			})
-		}
-		schemas = append(schemas, entSchema)
-	}
-	return json.Marshal(schemas)
-}
-
-func (r *reorder) UnmarshalSchema(buf []byte) ([]Schema, error) {
-	var schemas []Schema
-	if err := json.Unmarshal(buf, &schemas); err != nil {
-		return nil, err
-	}
-	return schemas, nil
 }

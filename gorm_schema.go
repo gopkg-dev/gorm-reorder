@@ -1,5 +1,12 @@
 package gorm_reorder
 
+import (
+	"encoding/json"
+	"reflect"
+
+	"gorm.io/gorm/schema"
+)
+
 type Schema struct {
 	Name      string   `json:"name"`       //结构体名称
 	TableName string   `json:"table_name"` //数据库表名称
@@ -22,4 +29,46 @@ type Field struct {
 	PrimaryKey      bool              `json:"primary_key"`       //是否主键
 	AutoIncrement   bool              `json:"auto_increment"`    //是否自增
 	Tags            map[string]string `json:"tags"`              //Tags
+}
+
+func MarshalSchema(s []*schema.Schema) (b []byte, err error) {
+	var schemas []Schema
+	for _, s := range s {
+		entSchema := Schema{
+			Name:      s.Name,
+			TableName: s.Table,
+			Fields:    []*Field{},
+		}
+		for _, field := range s.Fields {
+			if field.IgnoreMigration || field.GORMDataType == "" {
+				continue
+			}
+			entSchema.Fields = append(entSchema.Fields, &Field{
+				Name:            field.Name,
+				DBName:          field.DBName,
+				DataType:        string(field.DataType),
+				FullTypeName:    field.FieldType.String(),
+				IsPtr:           field.FieldType.Kind() == reflect.Ptr,
+				Size:            field.Size,
+				Unique:          field.Unique,
+				Comment:         field.Comment,
+				NotNull:         field.NotNull,
+				HasDefaultValue: field.HasDefaultValue,
+				DefaultValue:    field.DefaultValue,
+				PrimaryKey:      field.PrimaryKey,
+				AutoIncrement:   field.AutoIncrement,
+				Tags:            field.TagSettings,
+			})
+		}
+		schemas = append(schemas, entSchema)
+	}
+	return json.Marshal(schemas)
+}
+
+func UnmarshalSchema(buf []byte) ([]Schema, error) {
+	var schemas []Schema
+	if err := json.Unmarshal(buf, &schemas); err != nil {
+		return nil, err
+	}
+	return schemas, nil
 }
